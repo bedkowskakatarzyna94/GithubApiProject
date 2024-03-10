@@ -6,24 +6,27 @@ import com.example.githubapiprojectforunittesting.data.model.UserRepositoryDto
 import com.example.githubapiprojectforunittesting.data.remote.GithubApi
 import com.example.githubapiprojectforunittesting.domain.model.UserRepository
 import com.example.githubapiprojectforunittesting.domain.repository.GithubRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+import java.io.IOException
 import java.lang.Exception
 import javax.inject.Inject
 
-class GithubRepositoryImpl @Inject constructor(private val api: GithubApi, private val db: UserRepositoriesDatabase) : GithubRepository {
+class GithubRepositoryImpl @Inject constructor(private val githubApi: GithubApi, private val db: UserRepositoriesDatabase) : GithubRepository {
 
     override suspend fun getCacheRepositories(username: String) = db.getRepositoryDao().getUserRepositories()
 
     override suspend fun insertUserRepository(userRepository: UserRepository) = db.getRepositoryDao().insertUserRepository(userRepository)
 
-    override suspend fun getUserRepositories(username: String): Flow<Resource<List<UserRepositoryDto>>> = flow {
-        try {
-            val repositories = api.getUserRepositories(username)
-            emit(Resource.Success(successData = repositories))
+    override suspend fun getUserRepositories(username: String): Resource<List<UserRepositoryDto>> {
+        return try {
+            val repositories = githubApi.getUserRepositories(username)
+            Resource.Success(repositories)
+        } catch (e: IOException) {
+            Resource.Error("Network error: ${e.message}")
+        } catch (e: HttpException) {
+            Resource.Error("HTTP error: ${e.message}")
         } catch (e: Exception) {
-            e.printStackTrace()
-            emit(Resource.Error(e.message ?: "Couldn't reach server. Check your internet connection"))
+            Resource.Error("Error: ${e.message}")
         }
     }
 }

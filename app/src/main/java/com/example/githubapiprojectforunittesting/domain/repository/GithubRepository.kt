@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.Flow
 interface GithubRepository {
     suspend fun getCacheRepositories(username: String) : Flow<List<UserRepository>>
     suspend fun insertUserRepository(userRepository: UserRepository) : Long
-    suspend fun getUserRepositories(username: String) : Flow<Resource<List<UserRepositoryDto>>>
+    suspend fun getUserRepositories(username: String) : Resource<List<UserRepositoryDto>>
 }

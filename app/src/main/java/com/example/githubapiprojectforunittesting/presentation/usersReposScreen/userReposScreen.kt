@@ -29,7 +29,8 @@ fun UserRepositoriesScreen(
     viewModel: UserRepositoriesViewModel = hiltViewModel()
 ) {
     var searchText by remember { mutableStateOf("") }
-    var repoList by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
+    val state = viewModel.userRepositoriesListState.value
+    val searchTextState by viewModel.searchTextState
 
     Column(
         modifier = Modifier
@@ -37,26 +38,16 @@ fun UserRepositoriesScreen(
             .padding(16.dp)
     ) {
         SearchField(
-            searchText = searchText,
-            onSearchTextChanged = { searchText = it },
+            searchText = searchTextState,
+            onSearchTextChanged = { viewModel.updateSearchTextState(newValue = it) },
             onSearchClicked = {}
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
+                viewModel.getUserRepositories()
                 // Perform search operation here using searchText
                 // For demo, just updating repoList with dummy data
-                repoList = listOf(
-                    "Repo 1" to "Description 1",
-                    "Repo 2" to "Description 2",
-                    "Repo 3" to "Description 3",
-                    "Repo 1" to "Description 1",
-                    "Repo 2" to "Description 2",
-                    "Repo 3" to "Description 3",
-                    "Repo 1" to "Description 1",
-                    "Repo 2" to "Description 2",
-                    "Repo 3" to "Description 3"
-                )
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,8 +67,8 @@ fun UserRepositoriesScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn {
-            items(repoList) { repo ->
-                RepositoryItem(name = repo.first, description = repo.second)
+            items(state.userRepositories) { repo ->
+                RepositoryItem(name = repo.name, description = repo.description ?: "No description")
             }
         }
     }
@@ -125,7 +116,7 @@ fun RepositoryItem(name: String, description: String) {
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Text(
-                text = "Repo Name: $name",
+                text = "Name: $name",
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)

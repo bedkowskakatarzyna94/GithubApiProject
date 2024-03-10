@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.githubapiprojectforunittesting.presentation.usersReposScreen.UserRepositoriesScreen
 import com.example.githubapiprojectforunittesting.presentation.usersReposScreen.UserRepositoriesViewModel
 import com.example.githubapiprojectforunittesting.ui.theme.GithubApiProjectForUnitTestingTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,11 +22,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             //test
-            val viewmodels : UserRepositoriesViewModel = hiltViewModel()
             GithubApiProjectForUnitTestingTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Greeting("Android")
+//                    Greeting("Android")
+                    UserRepositoriesScreen()
                 }
             }
         }
@@ -33,9 +34,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(name: String, modifier: Modifier = Modifier, viewModel: UserRepositoriesViewModel = hiltViewModel()) {
+    val state = viewModel.userRepositoriesListState.value
     Text(
-        text = "Hello $name!",
+        text = "$state",
         modifier = modifier
     )
 }

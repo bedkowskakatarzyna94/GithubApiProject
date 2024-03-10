@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -16,6 +17,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -64,14 +66,21 @@ fun UserRepositoriesScreen(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn {
-            if (state.userRepositories.isEmpty()) {
-                item {
-                    Text(text = "No repos found", color = Color.Black, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn {
+                if (state.userRepositories.isEmpty()) {
+                    item {
+                        Text(text = "No repos found", color = Color.Black, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    }
                 }
-            } else {
-                items(state.userRepositories) { repo ->
-                    RepositoryItem(name = repo.name, description = repo.description ?: "No description")
+                if (state.isLoading) {
+                    item {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                } else {
+                    items(state.userRepositories) { repo ->
+                        RepositoryItem(name = repo.name, description = repo.description ?: "No description")
+                    }
                 }
             }
         }

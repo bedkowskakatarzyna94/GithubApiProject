@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,7 +29,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun UserRepositoriesScreen(
     viewModel: UserRepositoriesViewModel = hiltViewModel()
 ) {
-    var searchText by remember { mutableStateOf("") }
     val state = viewModel.userRepositoriesListState.value
     val searchTextState by viewModel.searchTextState
 
@@ -46,8 +46,6 @@ fun UserRepositoriesScreen(
         Button(
             onClick = {
                 viewModel.getUserRepositories()
-                // Perform search operation here using searchText
-                // For demo, just updating repoList with dummy data
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -67,8 +65,14 @@ fun UserRepositoriesScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn {
-            items(state.userRepositories) { repo ->
-                RepositoryItem(name = repo.name, description = repo.description ?: "No description")
+            if (state.userRepositories.isEmpty()) {
+                item {
+                    Text(text = "No repos found", color = Color.Black, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                }
+            } else {
+                items(state.userRepositories) { repo ->
+                    RepositoryItem(name = repo.name, description = repo.description ?: "No description")
+                }
             }
         }
     }
